@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>TapCoin Game v2.0</title>
+    <title>TapCoin Game v2.1</title>
     <style>
         :root {
             --bg-color-light: #f9f9f9;
@@ -23,6 +23,11 @@
             --shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.7);
         }
 
+        /* Reset and base */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: var(--font-family);
@@ -30,6 +35,10 @@
             color: var(--text-color-light);
             transition: background 0.4s, color 0.4s;
             user-select: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         body.dark {
@@ -39,13 +48,15 @@
 
         .container {
             max-width: 520px;
-            margin: 40px auto;
-            padding: 30px;
+            margin: 40px 16px 40px 16px;
+            padding: 30px 30px 40px 30px;
             background: rgba(255, 255, 255, 0.08);
             border-radius: var(--radius);
             box-shadow: var(--shadow-light);
-            transition: box-shadow 0.4s;
+            transition: box-shadow 0.4s, background 0.4s;
             text-align: center;
+            flex-grow: 1;
+            width: 100%;
         }
 
         body.dark .container {
@@ -55,47 +66,58 @@
 
         h1 {
             font-size: 3rem;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             user-select: text;
         }
 
         #coinButton {
-            font-size: 90px;
+            font-size: 110px;
             border: none;
             background: none;
             cursor: pointer;
             transition: transform 0.15s ease;
             filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.15));
+            user-select: none;
         }
 
         #coinButton:active {
-            transform: scale(1.25) rotate(20deg);
+            transform: scale(1.3) rotate(20deg);
         }
 
         .btn {
-            padding: 12px 28px;
-            margin: 12px 8px;
-            font-size: 18px;
-            font-weight: 600;
+            padding: 14px 32px;
+            margin: 12px 10px;
+            font-size: 20px;
+            font-weight: 700;
             background-color: var(--btn-bg);
             color: white;
             border: none;
             border-radius: var(--radius);
             cursor: pointer;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+            transition: background-color 0.3s ease, transform 0.2s ease;
             user-select: none;
+            min-width: 180px;
         }
 
         .btn:hover {
             background-color: var(--btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .stats {
             margin: 20px 0 30px;
-            font-size: 20px;
-            font-weight: 600;
+            font-size: 22px;
+            font-weight: 700;
             letter-spacing: 0.04em;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
         }
 
         .stats span {
@@ -104,32 +126,37 @@
 
         .dark-toggle {
             position: fixed;
-            top: 25px;
-            right: 25px;
+            top: 20px;
+            right: 20px;
             background: var(--primary-color);
             border: none;
             border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            font-size: 24px;
+            width: 50px;
+            height: 50px;
+            font-size: 26px;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             user-select: none;
-            transition: background-color 0.4s;
+            transition: background-color 0.4s, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .dark-toggle:hover {
             background: #ffa500;
+            transform: rotate(20deg);
         }
 
         /* Progress bar container */
         .progress-container {
             width: 100%;
-            height: 25px;
+            height: 28px;
             background-color: var(--progress-bg);
             border-radius: 50px;
             overflow: hidden;
-            margin: 20px 0 10px;
+            margin: 20px 0 20px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         /* Progress bar fill */
@@ -148,19 +175,69 @@
         /* Footer */
         footer {
             text-align: center;
-            font-size: 14px;
+            font-size: 15px;
             color: #888;
-            margin-top: 50px;
+            margin-top: auto;
+            padding: 12px 8px;
             user-select: none;
+        }
+
+        /* Notification box */
+        #notification {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: #222;
+            padding: 16px 24px;
+            border-radius: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+            font-weight: 700;
+            font-size: 18px;
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        #notification.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            #coinButton {
+                font-size: 80px;
+            }
+
+            .btn {
+                font-size: 16px;
+                min-width: 140px;
+                padding: 10px 20px;
+            }
+
+            .stats {
+                font-size: 16px;
+                gap: 12px;
+            }
         }
     </style>
 </head>
 
 <body class="light">
-    <button class="dark-toggle" title="Toggle Day/Night Mode" onclick="toggleMode()">🌗</button>
+    <button class="dark-toggle" title="Toggle Day/Night Mode" aria-label="Toggle Day/Night Mode">🌗</button>
 
     <div class="container" role="main" aria-label="TapCoin game container">
-        <h1>🪙 TapCoin v2.0</h1>
+        <h1>🪙 TapCoin v2.1</h1>
 
         <div class="stats" aria-live="polite" aria-atomic="true">
             Ochko: <span id="score">0</span> |
@@ -176,15 +253,25 @@
         <button id="coinButton" aria-label="Tap the coin">🪙</button>
 
         <div>
-            <button class="btn" id="upgradeBtn" aria-label="Upgrade tap power">🔧 Upgrade Power (<span id="upgradeCost">100</span>)</button>
-            <button class="btn" id="autoTapperBtn" aria-label="Buy auto tapper">🤖 Buy AutoTapper (500)</button>
+            <button class="btn" id="upgradeBtn" aria-label="Upgrade tap power">
+                🔧 Upgrade Power (<span id="upgradeCost">100</span>)
+            </button>
+            <button class="btn" id="autoTapperBtn" aria-label="Buy auto tapper">
+                🤖 Buy AutoTapper (<span id="autoTapperCost">500</span>)
+            </button>
             <button class="btn" id="resetBtn" aria-label="Reset the game">♻️ Reset</button>
         </div>
     </div>
 
     <footer>Made by Shohjahon. Enjoy tapping! ⚡</footer>
 
+    <div id="notification" role="alert" aria-live="assertive"></div>
+
     <script>
+        // Get userId from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id') || 'guest';
+
         // Initial states
         let score = 0;
         let power = 1;
@@ -199,14 +286,34 @@
         const levelEl = document.getElementById("level");
         const progressFill = document.getElementById("progressFill");
         const upgradeCostEl = document.getElementById("upgradeCost");
+        const autoTapperCostEl = document.getElementById("autoTapperCost");
+        const notification = document.getElementById("notification");
 
-        // Sounds
-        const tapSound = new Audio('https://freesound.org/data/previews/66/66717_931655-lq.mp3'); // Tap sound
-        const upgradeSound = new Audio('https://freesound.org/data/previews/331/331912_3248244-lq.mp3'); // Upgrade sound
+        const coinButton = document.getElementById("coinButton");
+        const upgradeBtn = document.getElementById("upgradeBtn");
+        const autoTapperBtn = document.getElementById("autoTapperBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const darkToggleBtn = document.querySelector(".dark-toggle");
 
-        // Load saved data from localStorage
-        function loadData() {
-            const saved = localStorage.getItem('tapcoinData');
+        // Calculate costs dynamically
+        function getUpgradeCost() {
+            return 100 * power;
+        }
+
+        function getAutoTapperCost() {
+            return 500 * (autoTaps + 1);
+        }
+
+        // Save to local storage & server
+        function saveGame() {
+            const data = { score, power, autoTaps, level };
+            localStorage.setItem("tapCoinData", JSON.stringify(data));
+            sendScoreToServer();
+        }
+
+        // Load from local storage
+        function loadGame() {
+            const saved = localStorage.getItem("tapCoinData");
             if (saved) {
                 const data = JSON.parse(saved);
                 score = data.score || 0;
@@ -216,147 +323,143 @@
             }
         }
 
-        // Save data to localStorage
-        function saveData() {
-            const data = { score, power, autoTaps, level };
-            localStorage.setItem('tapcoinData', JSON.stringify(data));
+        // Show notification message
+        function showNotification(msg) {
+            notification.textContent = msg;
+            notification.classList.add("show");
+            setTimeout(() => {
+                notification.classList.remove("show");
+            }, 2500);
         }
 
-        // Update UI display
-        function updateDisplay() {
+        // Update UI
+        function updateUI() {
             scoreEl.textContent = score;
             powerEl.textContent = power;
             autoTapsEl.textContent = autoTaps;
             levelEl.textContent = level;
 
-            // Update upgrade cost
-            upgradeCostEl.textContent = power * 100;
+            upgradeCostEl.textContent = getUpgradeCost();
+            autoTapperCostEl.textContent = getAutoTapperCost();
 
-            // Update progress bar
-            const progressPercent = ((score % levelUpScore) / levelUpScore) * 100;
-            progressFill.style.width = progressPercent + '%';
-
-            saveData();
+            // Update progress bar width
+            const progressPercent = Math.min((score % levelUpScore) / levelUpScore * 100, 100);
+            progressFill.style.width = progressPercent + "%";
         }
 
-        // Increase level if score passed threshold
-        function checkLevelUp() {
-            let newLevel = Math.floor(score / levelUpScore) + 1;
-            if (newLevel > level) {
-                level = newLevel;
-                alert(`🎉 Level Up! Siz ${level} - bosqichga o'tdingiz!`);
-                saveData();
+        // Level up logic
+        function tryLevelUp() {
+            const currentLevelScore = level * levelUpScore;
+            if (score >= currentLevelScore) {
+                level++;
+                showNotification(`🎉 Level up! You reached level ${level}`);
+                saveGame();
             }
         }
 
-        // Tap coin
-        function tapCoin() {
-            score += power;
-            tapSound.play();
-            updateDisplay();
-            checkLevelUp();
-        }
+        // Save to server (async)
+        fetch("http://localhost:8000/update", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                score: score,
+                power: power,
+                autoTaps: autoTaps,
+                level: level,
+            }),
+        });
 
-        // Upgrade power
-        function upgradePower() {
-            const cost = power * 100;
+
+        // Tap action
+        coinButton.addEventListener("click", () => {
+            score += power;
+            updateUI();
+            tryLevelUp();
+            saveGame();
+        });
+
+        // Upgrade power button
+        upgradeBtn.addEventListener("click", () => {
+            const cost = getUpgradeCost();
             if (score >= cost) {
                 score -= cost;
                 power++;
-                upgradeSound.play();
-                updateDisplay();
+                updateUI();
+                showNotification(`⚡ Power upgraded to ${power}!`);
+                saveGame();
             } else {
-                alert("Sizda yetarli ochko yo'q!");
+                showNotification("❌ Not enough score to upgrade power!");
             }
-        }
+        });
 
-        // Buy auto tapper
-        function buyAutoTapper() {
-            const cost = 500 * (autoTaps + 1);
+        // Buy auto tapper button
+        autoTapperBtn.addEventListener("click", () => {
+            const cost = getAutoTapperCost();
             if (score >= cost) {
                 score -= cost;
                 autoTaps++;
-                upgradeSound.play();
-                updateDisplay();
+                updateUI();
+                showNotification(`🤖 AutoTapper purchased! Count: ${autoTaps}`);
+                saveGame();
             } else {
-                alert(`AutoTapper uchun ochko yetarli emas! (${cost} ochko kerak)`);
+                showNotification("❌ Not enough score to buy AutoTapper!");
             }
-        }
+        });
 
-        // Auto tapper interval
-        function startAutoTapper() {
-            setInterval(() => {
-                if (autoTaps > 0) {
-                    score += autoTaps * power;
-                    updateDisplay();
-                    checkLevelUp();
-                }
-            }, 1000);
-        }
-
-        // Reset game
-        function resetGame() {
-            if (confirm("O'yinni qayta boshlaysizmi? Barcha ma'lumotlar o'chadi.")) {
+        // Reset button
+        resetBtn.addEventListener("click", () => {
+            if (confirm("Are you sure you want to reset the game?")) {
                 score = 0;
                 power = 1;
                 autoTaps = 0;
                 level = 1;
-                updateDisplay();
-                saveData();
+                updateUI();
+                saveGame();
+                showNotification("Game reset!");
             }
-        }
-
-        // Day/night mode toggle
-        function toggleMode() {
-            document.body.classList.toggle("dark");
-            localStorage.setItem("darkMode", document.body.classList.contains("dark") ? "true" : "false");
-        }
-
-        // Load dark mode state
-        function loadMode() {
-            if (localStorage.getItem("darkMode") === "true") {
-                document.body.classList.add("dark");
-            }
-        }
-
-        // Event listeners
-        document.getElementById("coinButton").addEventListener("click", tapCoin);
-        document.getElementById("upgradeBtn").addEventListener("click", upgradePower);
-        document.getElementById("autoTapperBtn").addEventListener("click", buyAutoTapper);
-        document.getElementById("resetBtn").addEventListener("click", resetGame);
-
-        // Initialize game
-        loadData();
-        loadMode();
-        updateDisplay();
-        startAutoTapper();
-
-        async function saveToServer() {
-    try {
-        const data = {
-            user_id: userId,
-            score: score,
-            power: power,
-            autoTaps: autoTaps,
-            level: level
-        };
-
-        const response = await fetch("https://your-backend-domain.com/update", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
         });
 
-        if (!response.ok) {
-            console.error("Server javobida xatolik:", response.status);
+        // Auto tapper interval
+        setInterval(() => {
+            if (autoTaps > 0) {
+                score += autoTaps * power;
+                updateUI();
+                tryLevelUp();
+                saveGame();
+            }
+        }, 1000);
+
+        // Dark/light mode toggle
+        function applyTheme(theme) {
+            if (theme === "dark") {
+                document.body.classList.add("dark");
+                document.body.classList.remove("light");
+                localStorage.setItem("theme", "dark");
+            } else {
+                document.body.classList.add("light");
+                document.body.classList.remove("dark");
+                localStorage.setItem("theme", "light");
+            }
         }
-    } catch (error) {
-        console.error("Serverga ulanishda xatolik:", error);
-    }
-}
 
-setInterval(saveToServer, 5000);
+        darkToggleBtn.addEventListener("click", () => {
+            if (document.body.classList.contains("dark")) {
+                applyTheme("light");
+            } else {
+                applyTheme("dark");
+            }
+        });
 
+        // Load theme from local storage
+        const savedTheme = localStorage.getItem("theme") || "light";
+        applyTheme(savedTheme);
+
+        // On page load
+        loadGame();
+        updateUI();
     </script>
 </body>
 
